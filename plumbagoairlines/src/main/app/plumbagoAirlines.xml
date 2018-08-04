@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <db:mysql-config name="MySQL_Configuration" host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" doc:name="MySQL Configuration"/>
+
+    <flow name="plumbagoAirlines-main">
+        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
+        <apikit:router config-ref="plumbagoAirlines-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="plumbagoAirlines-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="plumbagoAirlines-console">
+        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
+        <apikit:console config-ref="plumbagoAirlines-config" doc:name="APIkit Console"/>
+    </flow>
+    <flow name="get:/plumbagoAirlineFlights/byCities:plumbagoAirlines-config">
+        <set-variable variableName="fromCity" value="#[message.inboundProperties.'http.query.params'.from]" doc:name="fromCity"/>
+        <set-variable variableName="toCity" value="#[message.inboundProperties.'http.query.params'.to]" doc:name="toCity"/>
+        <set-variable variableName="fromDate" value="#[message.inboundProperties.'http.query.params'.fromDate]" doc:name="fromDate"/>
+        <set-variable variableName="toDate" value="#[#[message.inboundProperties.'http.query.params'.toDate]]" doc:name="toDate"/>
+        <set-variable variableName="classType" value="#[message.inboundProperties.'http.query.params'.classType]" doc:name="classType"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM flights.flightdetails WHERE ((fromCity = #[flowVars.fromCity] and toCity = #[flowVars.toCity]) or (fromCity = #[flowVars.toCity] and toCity = #[flowVars.fromCity])) and classtype = #[flowVars.classType] and (date = #[flowVars.toDate] or date = #[flowVars.fromDate]);]]></db:parameterized-query>
+        </db:select>
+        <dw:transform-message doc:name="Transform Message" metadata:id="f2ec381d-48bb-4966-965d-6dcc9c4b6273">
+            <dw:input-payload doc:sample="sample_data\list_map_2.dwl"/>
+            <dw:input-variable variableName="fromCity"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	status: {
+		code: 200,
+		type: "Success",
+		message: "The call was successful"
+	},
+	response: {
+		flightDetails: payload map ((payload01 , indexOfPayload01) -> {
+			flightNumber: payload01.flightnumber,
+			flightName: payload01.flightname,
+			classType: payload01.classtype,
+			seatsAvailable: payload01.seatsavailable,
+			price: payload01.price
+		})
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <choice doc:name="checkDBRowsExists"/>
+
+    </flow>
+    <flow name="post:/plumbagoAirlineFlights/seatBooking:plumbagoAirlines-config">
+        <set-payload value="{
+	&quot;tripDetails&quot;: {
+		&quot;name&quot;: &quot;Ram&quot;,
+		&quot;fromCity&quot;: &quot;BLR&quot;,
+		&quot;toCity&quot;: &quot;GOA&quot;,
+		&quot;flightNumber&quot;: &quot;6Ea&quot;,
+		&quot;flightName&quot;: &quot;AR AS&quot;,
+		&quot;pnrNo&quot;: 34523476
+	}
+}" doc:name="Set Payload"/>
+
+    </flow>
+    <apikit:mapping-exception-strategy name="plumbagoAirlines-apiKitGlobalExceptionMapping">
+        <apikit:mapping statusCode="404">
+            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="405">
+            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="415">
+            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="406">
+            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="400">
+            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+    </apikit:mapping-exception-strategy>
+</mule>

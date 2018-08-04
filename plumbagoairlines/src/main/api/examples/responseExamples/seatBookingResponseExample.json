@@ -1,0 +1,10 @@
+{
+	"tripDetails": {
+		"name": "Ram",
+		"fromCity": "BLR",
+		"toCity": "GOA",
+		"flightNumber": "6Ea",
+		"flightName": "AR AS",
+		"pnrNo": 34523476
+	}
+}

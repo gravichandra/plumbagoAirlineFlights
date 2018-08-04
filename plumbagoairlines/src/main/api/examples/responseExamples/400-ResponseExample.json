@@ -1,0 +1,5 @@
+{
+"statusCode": 400,
+"statusType": "FieldMissingException",
+"message": "Bad request. This is reported when mandatory parameters in the request are missing."
+}

@@ -1,0 +1,39 @@
+#%RAML 0.8 Trait
+queryParameters:  
+        from:
+         displayName: FromCity
+         description: Flights from the City
+         type: string
+         required: true
+         example: "BLR"
+        to:
+          displayName: ToCity
+          description: Flights from the City
+          type: string
+          required: true
+          example: "GOA"
+        classType:
+          displayName: businessClass
+          description: Flights for the class
+          type: string
+          required: true
+          example: "firstClass" 
+          enum: [firstClass,businessClass,economyClass] 
+        toDate:
+          displayName: toDate
+          description: Flights to retrieve to date.
+          type: string
+          required: true
+          example: "2018-08-18"  
+        fromDate:
+          displayName: fromDate
+          description: Flights to retrieve from date.
+          type: string
+          required: true
+          example: "2018-08-20"
+        noOfPassengers:
+          displayName: noOfPassengers
+          description: noOfPassengers.
+          type: integer
+          required: false
+          example: 1                                 
