@@ -1,0 +1,5 @@
+{
+"statusCode": 50000,
+"statusType": "InternalServerException",
+"message": "Internal server error"
+}

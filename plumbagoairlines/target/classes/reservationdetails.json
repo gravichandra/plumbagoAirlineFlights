@@ -1,0 +1,17 @@
+{
+	"passengerDetails":[
+		{
+			"passengername": "",
+			"passengeraddress": "",
+			"passengercity": "",
+			"passengerstate": "",
+			"passengertraveldate": "",
+			"passengerreturndate": "",
+			"tocity": "",
+			"fromcity": "",
+			"pnrdetails": "",
+			"price": 2000
+			
+		}
+	]
+}

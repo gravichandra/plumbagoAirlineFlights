@@ -1,3 +1,6 @@
+%dw 1.0
+%output application/java
+---
 {
 	"bookingDetails": {
 		"flightDetails": {
@@ -17,7 +20,7 @@
 			"city": "Hyderabad",
 			"state": "Andhra Pradesh"
 		}],
-		"paymentDetails": {
+			"paymentDetails": {
 				"credit card number": 3232675668794326,
 				"expiration": "07/2019",
 				"contactNumber": 9898573628
