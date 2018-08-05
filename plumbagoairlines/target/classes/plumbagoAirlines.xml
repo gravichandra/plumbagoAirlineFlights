@@ -13,8 +13,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
     <db:mysql-config name="MySQL_Configuration" host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" doc:name="MySQL Configuration"/>
     <validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
     <configuration defaultExceptionStrategy-ref="plumbagoAirlines-apiKitGlobalExceptionMapping" doc:name="Configuration">
-        <http:config useTransportForUris="false"/>
+        <http:config useTransportForUris="false"/>                 
     </configuration>
+ <configuration doc:name="randomNumber">
+         <expression-language autoResolveVariables="false">
+             <global-functions>
+                 def randomNumber(size) { new java.util.Random().nextInt(size) }
+             </global-functions>
+         </expression-language>
+ </configuration>    
 
     <flow name="plumbagoAirlines-main">
         <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
@@ -81,9 +88,11 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
         <set-variable variableName="flightNumberFrom" value="#[payload.bookingDetails.flightDetails.flightNumberFrom]" doc:name="readFlightNumberFrom"/>
         <set-variable variableName="classType" value="#[payload.bookingDetails.flightDetails.classType]" doc:name="readClassType"/>
         <set-variable variableName="phoneNumber" value="#[payload.bookingDetails.paymentDetails.contactNumber]" doc:name="phoneNumber"/>
+        <set-variable variableName="toDate" value="#[payload.bookingDetails.flightDetails.toDate]" doc:name="toDate"/>
+        <set-variable variableName="fromDate" value="#[payload.bookingDetails.flightDetails.fromDate]" doc:name="fromDate"/>
         <enricher source="#[payload]" target="#[flowVars.flightDetails]" doc:name="Message Enricher">
             <db:select config-ref="MySQL_Configuration" doc:name="queryFlightDetails">
-                <db:parameterized-query><![CDATA[SELECT * FROM flights.flightdetails WHERE classtype = #[flowVars.classType] and (flightnumber = #[flowVars.flightNumberTo] or flightnumber = #[flowVars.flightNumberFrom]) ORDER BY date ASC;]]></db:parameterized-query>
+                <db:parameterized-query><![CDATA[SELECT * FROM flights.flightdetails WHERE classtype = #[flowVars.classType] and ((flightnumber = #[flowVars.flightNumberTo] and date = #[flowVars.toDate]) or (flightnumber = #[flowVars.flightNumberFrom] and date = #[flowVars.fromDate])) ORDER BY date ASC;]]></db:parameterized-query>
             </db:select>
         </enricher>
         <set-variable variableName="calculateAmount" value="#[(payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[0]&quot;)) + (payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[1]&quot;))]" doc:name="calculateAmount"/>
@@ -91,12 +100,13 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
         <choice doc:name="Choice">
             <when expression="#[flowVars.seatsAvailable == true]">
                 <ee:multi-transactional action="ALWAYS_BEGIN" doc:name="Transactional">
+                    <set-variable variableName="listPayload" value="#[[]]" doc:name="listPayload"/>
                     <foreach collection="#[payload.bookingDetails.passengerDetails]" doc:name="For Each">
                         <dw:transform-message doc:name="Transform Message" metadata:id="9863c9a6-adf9-4fe2-812c-6c977d1d3db0">
                             <dw:input-payload doc:sample="sample_data\map_1.dwl"/>
                             <dw:input-variable doc:sample="sample_data\list_map_3.dwl" variableName="flightDetails"/>
                             <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json
 ---
 {
 	passengerDetails: flowVars.flightDetails map ((flightDetail , indexOfFlightDetail) -> {
@@ -107,13 +117,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		passengertraveldate: flightDetail.date,
 		tocity: flightDetail.tocity,
 		fromcity: flightDetail.fromcity,
+		pnrdetails: randomNumber(99999999) as :string {format : "00000000"},
 		price: flightDetail.price,
-		flightNumber: flightDetail.flightnumber
+		flightNumber: flightDetail.flightnumber,
+		classType: flightDetail.classtype
 	})
 }]]></dw:set-payload>
                         </dw:transform-message>
-                        <foreach collection="#[payload.passengerDetails]" doc:name="For Each">
-                            <set-variable variableName="randomNumber" value="#[(new java.util.Random().nextInt(9999999))+10000000]" doc:name="Variable"/>
+                        <foreach collection="#[dw(&quot;payload.passengerDetails&quot;)]" doc:name="For Each">
+
+                            <expression-component doc:name="Expression"><![CDATA[#[flowVars.listPayload.add(payload)]]]></expression-component>
                             <db:insert config-ref="MySQL_Configuration" doc:name="Database">
                                 <db:parameterized-query><![CDATA[INSERT INTO `flights`.`reservationdetails`
 (`passengername`,
@@ -126,7 +139,8 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 `pnrdetails`,
 `price`,
 `flightnumber`,
-`contactnumber`)
+`contactnumber`,
+`classtype`)
 VALUES
 (#[payload.passengername],
 #[payload.passengeraddress],
@@ -135,10 +149,12 @@ VALUES
 #[payload.passengertraveldate],
 #[payload.tocity],
 #[payload.fromcity],
-#[flowVars.randomNumber],
+#[payload.pnrdetails],
 #[payload.price],
 #[payload.flightNumber],
-#[flowVars.phoneNumber]);]]></db:parameterized-query>
+#[flowVars.phoneNumber],
+#[payload.classType]);]]></db:parameterized-query>
+
                             </db:insert>
                         </foreach>
                     </foreach>
@@ -150,15 +166,25 @@ VALUES
                     <choice doc:name="Choice">
                         <when expression="#[flowVars.cardDetails.size() != 0 &amp;&amp; (dw(&quot;flowVars.cardDetails.amount[0]&quot;) &gt; flowVars.calculateAmount)]">
                             <set-variable variableName="deductAmount" value="#[dw(&quot;flowVars.cardDetails.amount[0]&quot;) - flowVars.calculateAmount]" doc:name="deductAmount"/>
-                            <db:update config-ref="MySQL_Configuration" doc:name="Database">
-                                <db:parameterized-query><![CDATA[UPDATE `flights`.`carddetails`
+                            <enricher source="#[payload]" target="#[flowVars.updateAmount]" doc:name="Message Enricher">
+                                <db:update config-ref="MySQL_Configuration" doc:name="Database">
+                                    <db:parameterized-query><![CDATA[UPDATE `flights`.`carddetails`
 SET `amount` = #[flowVars.deductAmount]
 WHERE `cardnumber` = #[dw("flowVars.cardDetails.cardnumber[0]")] and `cardexpiration` = #[dw("flowVars.cardDetails.cardexpiration[0]")];]]></db:parameterized-query>
-                            </db:update>
+                                </db:update>
+                            </enricher>
+
                             <logger level="INFO" doc:name="Logger"/>
+                            <dw:transform-message doc:name="Transform Message">
+                                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+}]]></dw:set-payload>
+                            </dw:transform-message>
                         </when>
                         <otherwise>
-                            <validation:is-true config-ref="Validation_Configuration" expression="#[flowVars.seatsAvailable == true]" doc:name="Validation"/>
+                            <validation:is-true config-ref="Validation_Configuration" message="Invalid Card details or Amount not enought for the transaction" expression="#[flowVars.seatsAvailable == true]" doc:name="Validation"/>
                         </otherwise>
                     </choice>
                     <rollback-exception-strategy maxRedeliveryAttempts="3" doc:name="Rollback Exception Strategy">
