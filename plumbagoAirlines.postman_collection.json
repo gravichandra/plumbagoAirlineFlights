@@ -1,0 +1,211 @@
+{
+	"id": "2e0351f6-700d-4fed-aefd-a4f7f513c415",
+	"name": "plumbagoAirlines",
+	"description": "",
+	"auth": null,
+	"events": null,
+	"variables": [],
+	"order": [
+		"2e21ce0c-ff35-4ad5-a898-da85698cc55c",
+		"659c2115-5630-4f6d-a981-d93236985272",
+		"a36fd442-c1e3-400f-897b-f43ac448376b",
+		"2cf4d321-938f-4e7a-91b9-d9cae7f55767",
+		"eb81e74d-ada0-400f-b2de-99c2f22c48f5"
+	],
+	"folders_order": [],
+	"folders": [],
+	"requests": [
+		{
+			"id": "2cf4d321-938f-4e7a-91b9-d9cae7f55767",
+			"name": "seatBooking-ErrorCardDetails",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/seatBooking",
+			"description": "",
+			"data": [],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
+			"headers": "Content-Type: application/json\n",
+			"pathVariables": {}
+		},
+		{
+			"id": "2e21ce0c-ff35-4ad5-a898-da85698cc55c",
+			"name": "byCities-Success",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/byCities?from=BLR&to=GOA&classType=economyClass&toDate=2018-08-18&fromDate=2018-08-20&noOfPassengers=2",
+			"description": "",
+			"data": null,
+			"dataMode": "params",
+			"headerData": [],
+			"method": "GET",
+			"pathVariableData": [],
+			"queryParams": [
+				{
+					"key": "from",
+					"value": "BLR",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "to",
+					"value": "GOA",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "classType",
+					"value": "economyClass",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "toDate",
+					"value": "2018-08-18",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "fromDate",
+					"value": "2018-08-20",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "noOfPassengers",
+					"value": "2",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				}
+			],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"headers": "",
+			"pathVariables": {}
+		},
+		{
+			"id": "659c2115-5630-4f6d-a981-d93236985272",
+			"name": "byCities-ErrorScenario",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/byCities?from=BLR&to=GOA&classType=economyClass&toDate=2018-08-18&fromDate=2018-08-20&noOfPassengers=2",
+			"description": "",
+			"data": null,
+			"dataMode": "params",
+			"headerData": [],
+			"method": "GET",
+			"pathVariableData": [],
+			"queryParams": [
+				{
+					"key": "from",
+					"value": "BLR",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "to",
+					"value": "GOA",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "classType",
+					"value": "economyClass",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "toDate",
+					"value": "2018-08-18",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "fromDate",
+					"value": "2018-08-20",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "noOfPassengers",
+					"value": "2",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				}
+			],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"headers": "",
+			"pathVariables": {}
+		},
+		{
+			"id": "a36fd442-c1e3-400f-897b-f43ac448376b",
+			"name": "seatBooking-Success",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/seatBooking",
+			"description": "",
+			"data": [],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
+			"headers": "Content-Type: application/json\n",
+			"pathVariables": {}
+		},
+		{
+			"id": "eb81e74d-ada0-400f-b2de-99c2f22c48f5",
+			"name": "seatBooking-ErrorScenario",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/seatBooking",
+			"description": "",
+			"data": [],
+			"dataMode": "raw",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": ""
+				}
+			],
+			"method": "POST",
+			"pathVariableData": [],
+			"queryParams": [],
+			"auth": null,
+			"events": [],
+			"folder": null,
+			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
+			"headers": "Content-Type: application/json\n",
+			"pathVariables": {}
+		}
+	]
+}
