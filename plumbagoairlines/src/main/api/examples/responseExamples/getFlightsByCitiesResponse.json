@@ -1,23 +1,29 @@
 {
-	"status": {
-		"code": 200,
-		"type": "Success",
-		"message": "The call was successful"
-	},
-	"response": {
-		"flightDetails": [{
-			"flightNumber": "6ta",
-			"flightName": "AR AS",
-			"classType": "firstClass",
-			"seatsAvailable": 10,
-			"price": 3000
-		},
-		{
-			"flightNumber": "6ta",
-			"flightName": "AR AS",
-			"classType": "businessClass",
-			"seatsAvailable": 20,
-			"price": 2500
-		}]
-	}
+    "statusCode": 200,
+    "statusType": "Success",
+    "message": "The call was successful",
+    "response": {
+        "flightDetails": [
+            {
+                "flightNumber": "6Ea",
+                "flightName": "AR AS",
+                "classType": "economyClass",
+                "date": "2018-08-18T00:00:00",
+                "fromCity": "BLR",
+                "toCity": "GOA",
+                "seatsAvailable": 50,
+                "price": 1500
+            },
+            {
+                "flightNumber": "7Ea",
+                "flightName": "INDG",
+                "classType": "economyClass",
+                "date": "2018-08-20T00:00:00",
+                "fromCity": "GOA",
+                "toCity": "BLR",
+                "seatsAvailable": 50,
+                "price": 1500
+            }
+        ]
+    }
 }

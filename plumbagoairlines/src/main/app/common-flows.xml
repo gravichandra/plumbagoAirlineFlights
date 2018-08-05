@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
         <set-variable variableName="fromDate" value="#[message.inboundProperties.'http.query.params'.fromDate]" doc:name="setFromDate" doc:description="Sets the fromDate in to a variable."/>
         <set-variable variableName="toDate" value="#[message.inboundProperties.'http.query.params'.toDate]" doc:name="setToDate" doc:description="Sets the toDate in to a variable."/>
         <set-variable variableName="classType" value="#[message.inboundProperties.'http.query.params'.classType]" doc:name="setClassType" doc:description="Sets the classType in to a variable."/>
+        <set-variable variableName="noOfPassengers" value="#[message.inboundProperties.'http.query.params'.noOfPassengers]" doc:name="setNoOfPassengers" doc:description="sets NoOfPassengers into a variable."/>
     </sub-flow>
     <sub-flow name="setCommonVariablesseatBookingFlow">
         <set-variable variableName="flightNumberTo" value="#[payload.bookingDetails.flightDetails.flightNumberTo]" doc:name="setFlightNumberTo" doc:description="Sets the flightNumberTo to a variable."/>

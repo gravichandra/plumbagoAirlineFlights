@@ -1,10 +1,50 @@
 {
-	"tripDetails": {
-		"name": "Ram",
-		"fromCity": "BLR",
-		"toCity": "GOA",
-		"flightNumber": "6Ea",
-		"flightName": "AR AS",
-		"pnrNo": 34523476
-	}
+    "statusCode": 200,
+    "statusType": "Success",
+    "message": "The call was successful",
+    "response": {
+        "tripDetails": [
+            {
+                "passengername": "Ram",
+                "passengertraveldate": "2018-08-18T00:00:00",
+                "tocity": "GOA",
+                "fromcity": "BLR",
+                "pnrdetails": "11344314",
+                "price": 3000,
+                "flightNumber": "6Ea",
+                "classType": "firstClass"
+            },
+            {
+                "passengername": "Ram",
+                "passengertraveldate": "2018-08-20T00:00:00",
+                "tocity": "BLR",
+                "fromcity": "GOA",
+                "pnrdetails": "29706302",
+                "price": 3000,
+                "flightNumber": "7Ea",
+                "classType": "firstClass"
+            },
+            {
+                "passengername": "Chandra",
+                "passengertraveldate": "2018-08-18T00:00:00",
+                "tocity": "GOA",
+                "fromcity": "BLR",
+                "pnrdetails": "05141586",
+                "price": 3000,
+                "flightNumber": "6Ea",
+                "classType": "firstClass"
+            },
+            {
+                "passengername": "Chandra",
+                "passengertraveldate": "2018-08-20T00:00:00",
+                "tocity": "BLR",
+                "fromcity": "GOA",
+                "pnrdetails": "53003959",
+                "price": 3000,
+                "flightNumber": "7Ea",
+                "classType": "firstClass"
+            }
+        ],
+        "contactNumber": 9898573628
+    }
 }

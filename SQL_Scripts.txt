@@ -1,0 +1,48 @@
+
+===============FLIGHT DETAILS========================
+CREATE TABLE `flightdetails` (
+  `fromcity` varchar(20) DEFAULT NULL,
+  `tocity` varchar(20) DEFAULT NULL,
+  `classtype` varchar(20) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `seatsavailable` int(11) DEFAULT NULL,
+  `flightnumber` varchar(20) DEFAULT NULL,
+  `flightname` varchar(45) DEFAULT NULL,
+  `price` decimal(10,0) DEFAULT NULL
+)
+
+===============INSERT FLIGHT DETAILS========================
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('BLR', 'GOA', 'firstClass', '2018-08-18', '12', '6Ea', 'AR AS', '3000');
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('BLR', 'GOA', 'businessClass', '2018-08-18', '20', '6Ea', 'AR AS', '2500');
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('BLR', 'GOA', 'economyClass', '2018-08-18', '50', '6Ea', 'AR AS', '1500');
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('GOA', 'BLR', 'economyClass', '2018-08-20', '50', '7Ea', 'INDG', '1500');
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('GOA', 'BLR', 'businessClass', '2018-08-20', '20', '7Ea', 'INDG', '2500');
+INSERT INTO `flightdetails` (`fromcity`,`tocity`,`classtype`,`date`,`seatsavailable`,`flightnumber`,`flightname`,`price`) VALUES ('GOA', 'BLR', 'firstClass', '2018-08-20', '12', '7Ea', 'INDG', '3000');
+
+
+===============RESERVATION DETAILS========================
+CREATE TABLE `reservationdetails` (
+  `passengername` varchar(50) DEFAULT NULL,
+  `passengeraddress` varchar(200) DEFAULT NULL,
+  `passengercity` varchar(45) DEFAULT NULL,
+  `passengerstate` varchar(45) DEFAULT NULL,
+  `passengertraveldate` date DEFAULT NULL,
+  `tocity` varchar(45) DEFAULT NULL,
+  `fromcity` varchar(45) DEFAULT NULL,
+  `pnrdetails` varchar(15) DEFAULT NULL,
+  `price` varchar(20) DEFAULT NULL,
+  `flightnumber` varchar(45) DEFAULT NULL,
+  `contactnumber` varchar(45) DEFAULT NULL,
+  `classtype` varchar(45) DEFAULT NULL,
+  UNIQUE KEY `pnrdetails_UNIQUE` (`pnrdetails`)
+) 
+===============CARD DETAILS========================
+CREATE TABLE `carddetails` (
+  `cardnumber` varchar(16) NOT NULL,
+  `cardexpiration` varchar(7) DEFAULT NULL,
+  `amount` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`cardnumber`)
+)
+===============INSERT CARD DETAILS========================
+INSERT INTO `carddetails` (`cardnumber`,`cardexpiration`,`amount`) VALUES ('3232675668794326', '07/2019', '60000');
+INSERT INTO `carddetails` (`cardnumber`,`cardexpiration`,`amount`) VALUES ('3232675668794343', '08/2019', '60000');
