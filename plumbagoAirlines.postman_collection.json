@@ -35,7 +35,7 @@
 			"auth": null,
 			"events": [],
 			"folder": null,
-			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
+			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 323267566879432611123,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
 			"headers": "Content-Type: application/json\n",
 			"pathVariables": {}
 		},
@@ -102,7 +102,7 @@
 		{
 			"id": "659c2115-5630-4f6d-a981-d93236985272",
 			"name": "byCities-ErrorScenario",
-			"url": "http://localhost:8081/api/plumbagoAirlineFlights/byCities?from=BLR&to=GOA&classType=economyClass&toDate=2018-08-18&fromDate=2018-08-20&noOfPassengers=2",
+			"url": "http://localhost:8081/api/plumbagoAirlineFlights/byCities?from=BLR1&to=GOA&classType=economyClass&toDate=2018-08-18&fromDate=2018-08-20&noOfPassengers=2",
 			"description": "",
 			"data": null,
 			"dataMode": "params",
@@ -112,7 +112,7 @@
 			"queryParams": [
 				{
 					"key": "from",
-					"value": "BLR",
+					"value": "BLR1",
 					"equals": true,
 					"description": "",
 					"enabled": true
@@ -203,7 +203,7 @@
 			"auth": null,
 			"events": [],
 			"folder": null,
-			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
+			"rawModeData": "{\r\n\t\"bookingDetails\": {\r\n\t\t\"flightDetails\": {\r\n\t\t\t\"flightNumberTo\": \"6Ea1\",\r\n\t\t\t\"toDate\": \"2018-08-18\",\r\n\t\t\t\"flightNumberFrom\": \"7Ea\",\r\n\t\t\t\"fromDate\": \"2018-08-20\",\r\n\t\t\t\"classType\": \"firstClass\"\r\n\t\t\t},\r\n\t\t\"passengerDetails\": [{\r\n\t\t\t\"name\": \"Ram\",\r\n\t\t\t\"address\": \"Street No: 1, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"name\": \"Chandra\",\r\n\t\t\t\"address\": \"Street No: 2, MG Road\",\r\n\t\t\t\"city\": \"Hyderabad\",\r\n\t\t\t\"state\": \"Andhra Pradesh\"\r\n\t\t}],\r\n\t\t\t\"paymentDetails\": {\r\n\t\t\t\t\"credit card number\": 3232675668794326,\r\n\t\t\t\t\"expiration\": \"07/2019\",\r\n\t\t\t\t\"contactNumber\": 9898573628\r\n\t\t\t}\r\n\t}\r\n}",
 			"headers": "Content-Type: application/json\n",
 			"pathVariables": {}
 		}
