@@ -10,36 +10,21 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-    <db:mysql-config name="MySQL_Configuration" host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" doc:name="MySQL Configuration"/>
-    <validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
-    <configuration defaultExceptionStrategy-ref="plumbagoAirlines-apiKitGlobalExceptionMapping" doc:name="Configuration">
-        <http:config useTransportForUris="false"/>                 
-    </configuration>
- <configuration doc:name="randomNumber">
-         <expression-language autoResolveVariables="false">
-             <global-functions>
-                 def randomNumber(size) { new java.util.Random().nextInt(size) }
-             </global-functions>
-         </expression-language>
- </configuration>    
 
     <flow name="plumbagoAirlines-main">
-        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
-        <apikit:router config-ref="plumbagoAirlines-config" doc:name="APIkit Router"/>
-        <exception-strategy ref="plumbagoAirlines-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/api/*" doc:name="recieveHttpRequest" doc:description="Recieves HTTP request from the input."/>
+        <logger message="Input Payload : #[payload]" level="INFO" doc:name="logInputPayload" doc:description="Logs the input payload."/>
+        <apikit:router config-ref="plumbagoAirlines-config" doc:name="apiKitRouter" doc:description="Routes to the target flow."/>
+        <exception-strategy ref="plumbagoAirlines-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" doc:description="Reference to the global exception strategy."/>
     </flow>
     <flow name="plumbagoAirlines-console">
-        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
-        <apikit:console config-ref="plumbagoAirlines-config" doc:name="APIkit Console"/>
+        <http:listener config-ref="plumbagoAirlines-httpListenerConfig" path="/console/*" doc:name="recieveHttpRequest" doc:description="Recieves HTTP request from the input."/>
+        <apikit:console config-ref="plumbagoAirlines-config" doc:name="apiKitConsole" doc:description="Routes to the target flow."/>
     </flow>
 
     <flow name="get:/plumbagoAirlineFlights/byCities:plumbagoAirlines-config">
-        <set-variable variableName="fromCity" value="#[message.inboundProperties.'http.query.params'.from]" doc:name="fromCity"/>
-        <set-variable variableName="toCity" value="#[message.inboundProperties.'http.query.params'.to]" doc:name="toCity"/>
-        <set-variable variableName="fromDate" value="#[message.inboundProperties.'http.query.params'.fromDate]" doc:name="fromDate"/>
-        <set-variable variableName="toDate" value="#[#[message.inboundProperties.'http.query.params'.toDate]]" doc:name="toDate"/>
-        <set-variable variableName="classType" value="#[message.inboundProperties.'http.query.params'.classType]" doc:name="classType"/>
-        <db:select config-ref="MySQL_Configuration" doc:name="queryFlightDetails">
+        <flow-ref name="setCommonVariablesCityFlow" doc:name="setCommonVariablesCityFlow" doc:description="Calls the setCommonVariablesCityFlow sub Flow."/>
+        <db:select config-ref="MySQL_Configuration" doc:name="queryFlightDetails" doc:description="Queries the flight details from the Database">
             <db:parameterized-query><![CDATA[SELECT * FROM flights.flightdetails WHERE ((fromCity = #[flowVars.fromCity] and toCity = #[flowVars.toCity]) or (fromCity = #[flowVars.toCity] and toCity = #[flowVars.fromCity])) and classtype = #[flowVars.classType] and (date = #[flowVars.toDate] or date = #[flowVars.fromDate]);]]></db:parameterized-query>
         </db:select>
         <dw:transform-message doc:name="tranformResponse" metadata:id="f2ec381d-48bb-4966-965d-6dcc9c4b6273">
@@ -49,11 +34,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 %output application/json
 ---
 {
-	status: {
-		code: 200,
-		type: "Success",
-		message: "The call was successful"
-	},
+		statusCode: 200,
+		statusType: "Success",
+		message: "The call was successful",
 	response: {
 		flightDetails: payload map ((payload01 , indexOfPayload01) -> {
 			flightNumber: payload01.flightnumber,
@@ -68,41 +51,30 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	}
 } when ((sizeOf payload) != 0) otherwise
 {
-	status: {
-		code: 404,
-		type: "NoFlightsFound",
-		message: "The call was successful: No Data Found"
-	},
-	response: {
+		statusCode: 404,
+		statuType: "NoFlightsFound",
 		message: "Invalid Criteria: No flights Retrieved"
-	}
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="Response Retrieved Successfully : #[payload]" level="INFO" doc:name="logResponse"/>
+        <logger message="Response Retrieved Successfully : #[payload]" level="INFO" doc:name="logResponse" doc:description="Logs the response payload."/>
 
     </flow>
     <flow name="post:/plumbagoAirlineFlights/seatBooking:plumbagoAirlines-config">
         <set-payload value="#[dw(&quot;payload&quot;,&quot;application/java&quot;)]" doc:name="setPayload"/>
-        <set-variable variableName="inputPayload" value="#[payload]" doc:name="inputPayload"/>
-        <set-variable variableName="flightNumberTo" value="#[payload.bookingDetails.flightDetails.flightNumberTo]" doc:name="readFlightNumberTo"/>
-        <set-variable variableName="flightNumberFrom" value="#[payload.bookingDetails.flightDetails.flightNumberFrom]" doc:name="readFlightNumberFrom"/>
-        <set-variable variableName="classType" value="#[payload.bookingDetails.flightDetails.classType]" doc:name="readClassType"/>
-        <set-variable variableName="phoneNumber" value="#[payload.bookingDetails.paymentDetails.contactNumber]" doc:name="phoneNumber"/>
-        <set-variable variableName="toDate" value="#[payload.bookingDetails.flightDetails.toDate]" doc:name="toDate"/>
-        <set-variable variableName="fromDate" value="#[payload.bookingDetails.flightDetails.fromDate]" doc:name="fromDate"/>
-        <enricher source="#[payload]" target="#[flowVars.flightDetails]" doc:name="Message Enricher">
-            <db:select config-ref="MySQL_Configuration" doc:name="queryFlightDetails">
+        <flow-ref name="setCommonVariablesseatBookingFlow" doc:name="setCommonVariablesseatBookingFlow" doc:description="Calls the CommonVariablesseatBookingFlow sub flow."/>
+        <enricher source="#[payload]" target="#[flowVars.flightDetails]" doc:name="setFlightDetails" doc:description="sets FlightDetails to a variable.">
+            <db:select config-ref="MySQL_Configuration" doc:name="queryFlightDetails" doc:description="Query FlightDetails from the database.">
                 <db:parameterized-query><![CDATA[SELECT * FROM flights.flightdetails WHERE classtype = #[flowVars.classType] and ((flightnumber = #[flowVars.flightNumberTo] and date = #[flowVars.toDate]) or (flightnumber = #[flowVars.flightNumberFrom] and date = #[flowVars.fromDate])) ORDER BY date ASC;]]></db:parameterized-query>
             </db:select>
         </enricher>
-        <set-variable variableName="calculateAmount" value="#[(payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[0]&quot;)) + (payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[1]&quot;))]" doc:name="calculateAmount"/>
-        <set-variable variableName="seatsAvailable" value="#[dw(&quot;flowVars.flightDetails.*seatsavailable&quot;)[0] &gt; 0 &amp;&amp; dw(&quot;flowVars.flightDetails.*seatsavailable&quot;)[1] &gt; 0]" doc:name="seatsAvailable"/>
-        <choice doc:name="Choice">
+        <set-variable variableName="calculateAmount" value="#[(payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[0]&quot;)) + (payload.bookingDetails.passengerDetails.size() * dw(&quot;flowVars.flightDetails.price[1]&quot;))]" doc:name="setCalculateAmount" doc:description="Calculates the price of the tickets."/>
+        <set-variable variableName="seatsAvailable" value="#[dw(&quot;flowVars.flightDetails.*seatsavailable&quot;)[0] &gt; 0 &amp;&amp; dw(&quot;flowVars.flightDetails.*seatsavailable&quot;)[1] &gt; 0]" doc:name="setSeatsAvailable" doc:description="Sets SeatsAvailable into a variable."/>
+        <choice doc:name="checksSeatsAvailable" doc:description="check for the SeatsAvailable.">
             <when expression="#[flowVars.seatsAvailable == true]">
                 <ee:multi-transactional action="ALWAYS_BEGIN" doc:name="Transactional">
-                    <set-variable variableName="listPayload" value="#[[]]" doc:name="listPayload"/>
-                    <foreach collection="#[payload.bookingDetails.passengerDetails]" doc:name="For Each">
-                        <dw:transform-message doc:name="Transform Message" metadata:id="9863c9a6-adf9-4fe2-812c-6c977d1d3db0">
+                    <set-variable variableName="listPayload" value="#[[]]" doc:name="listPayload" doc:description="Initialises the list to add the payload."/>
+                    <foreach collection="#[payload.bookingDetails.passengerDetails]" doc:name="forEachPassenger">
+                        <dw:transform-message doc:name="transformPayload" metadata:id="9863c9a6-adf9-4fe2-812c-6c977d1d3db0">
                             <dw:input-payload doc:sample="sample_data\map_1.dwl"/>
                             <dw:input-variable doc:sample="sample_data\list_map_3.dwl" variableName="flightDetails"/>
                             <dw:set-payload><![CDATA[%dw 1.0
@@ -124,70 +96,69 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	})
 }]]></dw:set-payload>
                         </dw:transform-message>
-                        <foreach collection="#[dw(&quot;payload.passengerDetails&quot;)]" doc:name="For Each">
 
-                            <expression-component doc:name="Expression"><![CDATA[#[flowVars.listPayload.add(payload)]]]></expression-component>
-                            <db:insert config-ref="MySQL_Configuration" doc:name="Database">
-                                <db:parameterized-query><![CDATA[INSERT INTO `flights`.`reservationdetails`
-(`passengername`,
-`passengeraddress`,
-`passengercity`,
-`passengerstate`,
-`passengertraveldate`,
-`tocity`,
-`fromcity`,
-`pnrdetails`,
-`price`,
-`flightnumber`,
-`contactnumber`,
-`classtype`)
-VALUES
-(#[payload.passengername],
-#[payload.passengeraddress],
-#[payload.passengercity],
-#[payload.passengerstate],
-#[payload.passengertraveldate],
-#[payload.tocity],
-#[payload.fromcity],
-#[payload.pnrdetails],
-#[payload.price],
-#[payload.flightNumber],
-#[flowVars.phoneNumber],
-#[payload.classType]);]]></db:parameterized-query>
-
-                            </db:insert>
-                        </foreach>
                     </foreach>
-                    <enricher source="#[payload]" target="#[flowVars.cardDetails]" doc:name="Message Enricher">
-                        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+                    <enricher source="#[payload]" target="#[flowVars.cardDetails]" doc:name="setCardDetails" doc:description="sets CardDetails into a variable.">
+                        <db:select config-ref="MySQL_Configuration" doc:name="queryCardDetails" doc:description="Query CardDetails from the database.">
                             <db:parameterized-query><![CDATA[SELECT * FROM `flights`.`carddetails` WHERE cardnumber = #[payload.bookingDetails.paymentDetails.'credit card number'] and cardexpiration = #[payload.bookingDetails.paymentDetails.expiration];]]></db:parameterized-query>
                         </db:select>
                     </enricher>
-                    <choice doc:name="Choice">
+                    <choice doc:name="validCardDetails" doc:description="Checks the valid CardDetails from the database.">
                         <when expression="#[flowVars.cardDetails.size() != 0 &amp;&amp; (dw(&quot;flowVars.cardDetails.amount[0]&quot;) &gt; flowVars.calculateAmount)]">
-                            <set-variable variableName="deductAmount" value="#[dw(&quot;flowVars.cardDetails.amount[0]&quot;) - flowVars.calculateAmount]" doc:name="deductAmount"/>
-                            <enricher source="#[payload]" target="#[flowVars.updateAmount]" doc:name="Message Enricher">
-                                <db:update config-ref="MySQL_Configuration" doc:name="Database">
+                            <set-variable variableName="deductAmount" value="#[dw(&quot;flowVars.cardDetails.amount[0]&quot;) - flowVars.calculateAmount]" doc:name="setDeductAmount" doc:description="sets the Amount that has to be deducted from the Database."/>
+                            <enricher source="#[payload]" target="#[flowVars.updateAmount]" doc:name="setUpdateAmount" doc:description="set UpdateAmount output form the database to a variable.">
+                                <db:update config-ref="MySQL_Configuration" doc:name="updatePrice">
                                     <db:parameterized-query><![CDATA[UPDATE `flights`.`carddetails`
 SET `amount` = #[flowVars.deductAmount]
 WHERE `cardnumber` = #[dw("flowVars.cardDetails.cardnumber[0]")] and `cardexpiration` = #[dw("flowVars.cardDetails.cardexpiration[0]")];]]></db:parameterized-query>
                                 </db:update>
                             </enricher>
-
-                            <logger level="INFO" doc:name="Logger"/>
-                            <dw:transform-message doc:name="Transform Message">
+                            <foreach collection="#[dw(&quot;flowVars.flightDetails&quot;)]" doc:name="forEachRecievedRecord" doc:description="For Each RecievedRecord from the database for each flight number.">
+                                <db:update config-ref="MySQL_Configuration" doc:name="updateSeatDetails" doc:description="Update seat details from in the database.">
+                                    <db:parameterized-query><![CDATA[UPDATE `flights`.`flightdetails`
+SET
+seatsavailable = #[payload.seatsavailable - flowVars.noOfPassengers]
+WHERE 
+fromcity = #[payload.fromcity] and
+tocity = #[payload.tocity] and
+classtype = #[payload.classtype] and
+date = #[payload.date] and
+flightnumber = #[payload.flightnumber] and
+flightname = #[payload.flightname] and
+price = #[payload.price];]]></db:parameterized-query>
+                                </db:update>
+                            </foreach>
+                            <dw:transform-message doc:name="transformResponse">
                                 <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json
 ---
 {
+		statusCode: 200,
+		statusType: "Success",
+		message: "The call was successful",
+	response: {		
+	"tripDetails": flowVars.listPayload map (payload, indexOflistPayload) -> {
+		passengername: payload.passengername,
+		passengertraveldate: payload.passengertraveldate,
+		tocity: payload.tocity,
+		fromcity: payload.fromcity,
+		pnrdetails: payload.pnrdetails,
+		price: payload.price,
+		flightNumber: payload.flightNumber,
+		classType: payload.classType		
+	},
+	 "contactNumber": flowVars.phoneNumber	 
+	 }
 }]]></dw:set-payload>
                             </dw:transform-message>
+                            <logger level="INFO" doc:name="logResponsePayload" doc:description="Logs the Response Payload." message="Log Response Payload: #[payload]"/>
+
                         </when>
                         <otherwise>
-                            <validation:is-true config-ref="Validation_Configuration" message="Invalid Card details or Amount not enought for the transaction" expression="#[flowVars.seatsAvailable == true]" doc:name="Validation"/>
+                            <validation:is-true config-ref="Validation_Configuration" message="Invalid Card details or Amount not enought for the transaction" expression="#[flowVars.seatsAvailable == true]" doc:name="throwErrorInvalidCardDetails" doc:description="throwError when InvalidCardDetails are recieved."/>
                         </otherwise>
                     </choice>
-                    <rollback-exception-strategy maxRedeliveryAttempts="3" doc:name="Rollback Exception Strategy">
+                    <rollback-exception-strategy maxRedeliveryAttempts="3" doc:name="rollbackStrategy">
                         <logger message="#[exception]" level="INFO" doc:name="Logger"/>
                         <on-redelivery-attempts-exceeded>
                             <set-property propertyName="http.status" value="500" doc:name="Property"/>
@@ -201,17 +172,8 @@ WHERE `cardnumber` = #[dw("flowVars.cardDetails.cardnumber[0]")] and `cardexpira
                 </ee:multi-transactional>
             </when>
             <otherwise>
-                <logger message="No Seats Available for Flights: #[flowVars.flightNumberFrom] or #[flowVars.flightNumberTo]" level="INFO" doc:name="logError"/>
-                <set-payload value="{
-	status: {
-		code: 404,
-		type: &quot;NoSeatsAvailable&quot;,
-		message: &quot;The call was successful: No Data Found&quot;
-	},
-	response: {
-		message: &quot;Sorry, No Seats Available&quot;
-	}
-}" doc:name="setInvalidResponse"/>
+                <logger message="No Seats Available for Flights: #[flowVars.flightNumberFrom] or #[flowVars.flightNumberTo]" level="INFO" doc:name="logError" doc:description="Logs the error incase of seats unavailable."/>
+                <set-payload value="{  statusCode: 404,   statusType: &quot;NoSeatsAvailable&quot;,   message: &quot;Sorry, No Seats Available&quot;  }" doc:name="setInvalidResponse" doc:description="Sets the payload when there is an error."/>
             </otherwise>
         </choice>
     </flow>

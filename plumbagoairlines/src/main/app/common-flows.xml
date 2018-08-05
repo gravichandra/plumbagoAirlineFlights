@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <sub-flow name="setCommonVariablesCityFlow">
+        <set-variable variableName="fromCity" value="#[message.inboundProperties.'http.query.params'.from]" doc:name="setFromCity" doc:description="Sets the fromCity in to a variable."/>
+        <set-variable variableName="toCity" value="#[message.inboundProperties.'http.query.params'.to]" doc:name="setToCity" doc:description="Sets the toCity in to a variable."/>
+        <set-variable variableName="fromDate" value="#[message.inboundProperties.'http.query.params'.fromDate]" doc:name="setFromDate" doc:description="Sets the fromDate in to a variable."/>
+        <set-variable variableName="toDate" value="#[message.inboundProperties.'http.query.params'.toDate]" doc:name="setToDate" doc:description="Sets the toDate in to a variable."/>
+        <set-variable variableName="classType" value="#[message.inboundProperties.'http.query.params'.classType]" doc:name="setClassType" doc:description="Sets the classType in to a variable."/>
+    </sub-flow>
+    <sub-flow name="setCommonVariablesseatBookingFlow">
+        <set-variable variableName="flightNumberTo" value="#[payload.bookingDetails.flightDetails.flightNumberTo]" doc:name="setFlightNumberTo" doc:description="Sets the flightNumberTo to a variable."/>
+        <set-variable variableName="flightNumberFrom" value="#[payload.bookingDetails.flightDetails.flightNumberFrom]" doc:name="setFlightNumberFrom" doc:description="Sets the flightNumberFrom into a variable."/>
+        <set-variable variableName="classType" value="#[payload.bookingDetails.flightDetails.classType]" doc:name="setClassType" doc:description="Sets the classType to a variable."/>
+        <set-variable variableName="phoneNumber" value="#[payload.bookingDetails.paymentDetails.contactNumber]" doc:name="setPhoneNumber" doc:description="Sets phoneNumber into a variable."/>
+        <set-variable variableName="toDate" value="#[payload.bookingDetails.flightDetails.toDate]" doc:name="setToDate" doc:description="Sets toDate into a variable."/>
+        <set-variable variableName="fromDate" value="#[payload.bookingDetails.flightDetails.fromDate]" doc:name="setFromDate" doc:description="Sets fromDate into a variable."/>
+        <set-variable variableName="noOfPassengers" value="#[payload.bookingDetails.passengerDetails.size()]" doc:name="setNoOfPassengers" doc:description="sets NoOfPassengers into a variable"/>
+    </sub-flow>
+</mule>

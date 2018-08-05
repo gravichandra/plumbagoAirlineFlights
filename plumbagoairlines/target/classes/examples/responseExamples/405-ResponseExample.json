@@ -1,5 +1,0 @@
-{
-"statusCode": 405,
-"statusType": "InvalidMethodException",
-"message": "A request method is not supported for the requested resource."
-}
