@@ -264,7 +264,7 @@ price = #[payload.price];]]></db:parameterized-query>
             <set-payload value="{ 
 &quot;statusCode&quot;: 50000, 
 &quot;statusType&quot;: &quot;InternalServerException&quot;, 
-&quot;message&quot;: &quot;Internal server error&quot; 
+&quot;message&quot;:  &quot;#[exception.cause.message]&quot; 
 }" doc:name="Set Payload" mimeType="application/json"/>
         </apikit:mapping>
     </apikit:mapping-exception-strategy>

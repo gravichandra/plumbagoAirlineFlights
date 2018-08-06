@@ -1,0 +1,5 @@
+1. Using RAML0.8 and Mule Version 3.8
+2. Created two API's one for getting the flight details and one for seating booking.
+3. Assuming that flight details retrieved will have seats availability the frontend will do the logic and do call the for Seatbooking.
+4. Usig local database(MYSQL) and backend to get the flightDetails, UpdateReservation and Carddetails information.
+5. As there is no data going with an assumption data for the tables provided in the SQL scripts.
